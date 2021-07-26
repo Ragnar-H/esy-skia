@@ -22,7 +22,7 @@
             rustup override set stable
             '';
 
-          nativeBuildInputs = with pkgs; [ rustup python fontconfig clang nodePackages.esy nasm gn ninja ];
+          nativeBuildInputs = with pkgs; [ rustup python fontconfig clang nodePackages.esy nasm gn ninja fontconfig.lib ];
         };
       });
 }
