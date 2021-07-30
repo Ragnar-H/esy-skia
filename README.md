@@ -14,22 +14,17 @@ rust-skia has solved this. Let's copy [their approach](https://github.com/rust-s
 1. `nix develop`
 1. `esy install --global-path=PATH` # add --global-path since esy sometimes does direct lookup of expected locations
 1. `esy build --global-path=PATH -v` # add --global-path for same reason as above. Add -v for verbose error message
+1. We can get a build going by calling the commands from `build.sh` ourselves.
+```
+$ $PYTHON_BINARY tools/git-sync-deps
+$ ln -s third_party/externals/gyp tools/gyp
+$ gn gen out/Static --script-executable=python --cc="clang" --cxx="clang++" --skia_use_system_libjpeg_turbo=true --esy_skia_enable_svg=true --is_debug=false
+Done. Made 45 targets from 27 files in 410ms
 
-`esy build` currently fails with `fontconfig/fontconfig.h file not found`
+$ ninja -C out/Static/
+ninja: Entering directory `out/Static/'
+[1253/1253] link libskia.a
 
 ```
-clude -std=c++11 -fvisibility-inlines-hidden -fno-exceptions -fno-rtti -Wnon-virtual-dtor -Wno-noexcept-type -Wno-abstract-vbase-init -Wno-weak-vtables -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-undefined-func-template -c ../../src/ports/SkFontConfigInterface_direct.cpp -o obj/src/ports/fontmgr_fontconfig.SkFontConfigInterface_direct.o
-In file included from ../../src/ports/SkFontConfigInterface_direct.cpp:13:
-../../src/ports/SkFontConfigInterface_direct.h:14:10: fatal error: 'fontconfig/fontconfig.h' file not found
-#include <fontconfig/fontconfig.h>
-         ^~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-[66/1230] compile ../../src/shaders/gradients/SkGradientShader.cpp
-ninja: build stopped: subcommand failed.
-error: command failed: 'bash' './esy/build.sh' 'linux' '/home/ragnar/.esy/3__________________________________________________________________/i/esy_libjpeg_turbo-e4385a3b' (exited with 255)
-esy-build-package: exiting with errors above...
-error: build failed with exit code: 1
-  
-esy: exiting due to errors above
-
-```
+1. This is probably because when [nix builds C](https://nixos.wiki/wiki/C) source code the include paths are added via shell scripts and environment variables while Esy strips environment variables during build phase to have consistant builds
+1. Need to figure out a way to pass variables and packages to esy. Might need something [like this issue suggests](https://github.com/esy/esy/issues/731)
