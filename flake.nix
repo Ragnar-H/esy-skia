@@ -13,16 +13,33 @@
         devShell = pkgs.mkShell {
           SKIA_NINJA_COMMAND = "${pkgs.ninja}/bin/ninja";
           SKIA_GN_COMMAND = "${pkgs.gn}/bin/gn";
-          LIBCLANG_PATH = "${pkgs.llvmPackages.libclang}/lib/libclang.so";
+          # LIBCLANG_PATH = "${pkgs.llvmPackages.libclang}/lib/libclang.so";
 
           # necessary to override nix's defaults which cannot be overriden as others are
-          shellHook = ''
-            export CC="${pkgs.clang}/bin/clang"
-            export CXX="${pkgs.clang}/bin/clang++"
-            rustup override set stable
-            '';
+          # shellHook = ''
+          #   export CC="${pkgs.clang}/bin/clang"
+          #   export CXX="${pkgs.clang}/bin/clang++"
+          #   '';
 
-          nativeBuildInputs = with pkgs; [ rustup python fontconfig clang nodePackages.esy nasm gn ninja fontconfig.lib ];
+          # buildPhase = ''
+          #   NIX_CFLAGS_COMPILE="$(pkg-config --cflags gtk+-3.0) $NIX_CFLAGS_COMPILE"
+          #   # put the usual make/gcc code here
+          # '';
+
+          buildInputs = with pkgs; [
+            fontconfig.dev
+          ];
+          nativeBuildInputs = with pkgs; [
+            clang
+            pkg-config
+            # fontconfig
+            gn
+            nasm
+            ninja
+            nodePackages.esy
+            python
+            # rustup
+          ];
         };
       });
 }
